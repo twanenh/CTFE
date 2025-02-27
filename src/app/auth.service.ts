@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'https://tuananh.up.railway.app/api/auth';
+  private baseUrl = 'tuananh.up.railway.app/api/auth';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
@@ -15,10 +15,12 @@ export class AuthService {
   }
 
   register(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, { email, password },{ withCredentials: true });
+    return this.http.post(`${this.baseUrl}/register`, { email, password }, { withCredentials: true });
   }
 
   login(email: string, password: string): Observable<any> {
+    console.log(email, password),
+    console.log(`${this.baseUrl}/login`)
     return this.http.post(`${this.baseUrl}/login`, { email, password }, { withCredentials: true })
       .pipe(
         tap(() => {
