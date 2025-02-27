@@ -1,13 +1,13 @@
 <nav class="navbar">
-    <div class="navbar-brand">
-        <H1>TEST PROJECT</H1>
-    </div>
-    
-    <div class="navbar-menu">
+  <div class="navbar-brand">
+      <h1>TUẤN BÉO</h1>
+  </div>
+
+  <div class="navbar-menu">
       <ul *ngIf="isAuthenticated">
-        <li><a routerLink="/dashboard">Trang chủ</a></li>
-        <li><a routerLink="/profile">Hồ sơ</a></li>
-        <li><button (click)="logout()">Đăng xuất</button></li>
+          <li><a routerLink="/dashboard">Trang chủ</a></li>
+          <li><a routerLink="/profile">Hồ sơ</a></li>
+          <li><button (click)="logout()" class="logout-btn">Đăng xuất</button></li>
       </ul>
-    </div>
-  </nav>
+  </div>
+</nav>
