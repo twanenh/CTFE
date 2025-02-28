@@ -12,7 +12,7 @@ import { NavComponent } from '../app/nav/nav.component';
       <router-outlet></router-outlet>
     </main>
   `,
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   title = 'auth-app';

@@ -9,7 +9,7 @@ import { NgIf } from '@angular/common';
   standalone: true,
   imports: [ReactiveFormsModule, NgIf, RouterLink],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
   registerForm: FormGroup;

@@ -1,13 +1,26 @@
-<nav class="navbar">
-  <div class="navbar-brand">
-      <h1>TUẤN BÉO</h1>
-  </div>
-
-  <div class="navbar-menu">
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TUẤN BÉO</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand">
+        <a routerLink="/home" class="home-link">
+            <h1>TUẤN BÉO</h1>
+          </a>
+    </div>
+    
+    <div class="navbar-menu">
       <ul *ngIf="isAuthenticated">
-          <li><a routerLink="/dashboard">Trang chủ</a></li>
-          <li><a routerLink="/profile">Hồ sơ</a></li>
-          <li><button (click)="logout()" class="logout-btn">Đăng xuất</button></li>
+        <li><a routerLink="/dashboard">Trang chủ</a></li>
+        <li><a routerLink="/profile">Hồ sơ</a></li>
+        <li><button (click)="logout()" class="logout-btn">Đăng xuất</button></li>
       </ul>
-  </div>
-</nav>
+    </div>
+  </nav>
+</body>
+</html>

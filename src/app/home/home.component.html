@@ -1,1 +1,45 @@
-<p>home works!</p>
+<div class="home-container">
+    <div class="hero-section">
+      <h1 class="title">Chào mừng đến với ứng dụng của chúng tôi</h1>
+      <p class="subtitle">Giải pháp toàn diện cho nhu cầu của bạn</p>
+    </div>
+    
+    <div class="content">
+      <div class="features">
+        <div class="feature-card">
+          <div class="icon">🚀</div>
+          <h3>Nhanh chóng</h3>
+          <p>Trải nghiệm tốc độ vượt trội với ứng dụng của chúng tôi</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="icon">🔒</div>
+          <h3>An toàn</h3>
+          <p>Bảo mật dữ liệu của bạn là ưu tiên hàng đầu của chúng tôi</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="icon">💡</div>
+          <h3>Thông minh</h3>
+          <p>Công nghệ tiên tiến giúp bạn làm việc hiệu quả hơn</p>
+        </div>
+      </div>
+      
+      <div class="actions" *ngIf="!(isAuthenticated$ | async)">
+        <a routerLink="/login" class="btn btn-secondary">Đăng nhập</a>
+        <a routerLink="/register" class="btn btn-secondary">Đăng ký tài khoản</a>
+      </div>
+      
+      <div class="actions user-actions" *ngIf="isAuthenticated$ | async">
+        <h3>Bắt đầu ngay</h3>
+        <div class="buttons">
+          <a routerLink="/dashboard" class="btn btn-primary">
+            <span class="icon">📊</span> Vào Dashboard
+          </a>
+          <a routerLink="/profile" class="btn btn-secondary">
+            <span class="icon">👤</span> Hồ sơ của tôi
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
