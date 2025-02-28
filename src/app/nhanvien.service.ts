@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface NhanVien {
@@ -24,33 +24,33 @@ export interface NhanVienDTO {
 @Injectable({
   providedIn: 'root'
 })
-export class NhanVienService {
+export class EmployeeService {
   private apiUrl = 'https://tuananh.up.railway.app/api/NhanVien';
 
   constructor(private http: HttpClient) { }
 
   // Lấy danh sách nhân viên
-  getNhanViens(): Observable<NhanVien[]> {
+  getEmployees(): Observable<NhanVien[]> {
     return this.http.get<NhanVien[]>(this.apiUrl, { withCredentials: true });
   }
 
-  // Lấy thông tin một nhân viên
-  getNhanVien(id: string): Observable<NhanVien> {
+  // Lấy nhân viên theo ID
+  getEmployee(id: string): Observable<NhanVien> {
     return this.http.get<NhanVien>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
-  // Thêm nhân viên mới
-  createNhanVien(nhanVien: NhanVienDTO): Observable<NhanVien> {
-    return this.http.post<NhanVien>(this.apiUrl, nhanVien, { withCredentials: true });
+  // Thêm nhân viên
+  createEmployee(employee: NhanVienDTO): Observable<NhanVien> {
+    return this.http.post<NhanVien>(this.apiUrl, employee, { withCredentials: true });
   }
 
-  // Cập nhật thông tin nhân viên
-  updateNhanVien(id: string, nhanVien: NhanVienDTO): Observable<NhanVien> {
-    return this.http.put<NhanVien>(`${this.apiUrl}/${id}`, nhanVien, { withCredentials: true });
+  // Cập nhật nhân viên
+  updateEmployee(id: string, employee: NhanVienDTO): Observable<NhanVien> {
+    return this.http.put<NhanVien>(`${this.apiUrl}/${id}`, employee, { withCredentials: true });
   }
 
   // Xóa nhân viên
-  deleteNhanVien(id: string): Observable<any> {
+  deleteEmployee(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 }
