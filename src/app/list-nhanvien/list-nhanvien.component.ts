@@ -1,55 +1,70 @@
-// src/app/components/employee-list/employee-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { EmployeeService, NhanVien } from '../nhanvien.service';
-import { HttpClientModule } from '@angular/common/http';
-import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
+import { NhanVien, NhanVienService } from '../nhanvien.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-employee-list',
+  selector: 'app-nhan-vien-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, HttpClientModule],
-  templateUrl: './employee-list.component.html',
-  styleUrls: ['./employee-list.component.css']
+  imports: [CommonModule, FormsModule],
+  templateUrl: './nhan-vien-list.component.html',
+  styleUrls: ['./nhan-vien-list.component.css']
 })
-export class EmployeeListComponent implements OnInit {
-  employees: NhanVien[] = [];
-  loading = true;
+export class NhanVienListComponent implements OnInit {
+  nhanViens: NhanVien[] = [];
+  loading = false;
   error = '';
 
-  constructor(private employeeService: EmployeeService) { }
+  constructor(
+    private nhanVienService: NhanVienService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    this.loadEmployees();
+    this.loadNhanViens();
   }
 
-  loadEmployees(): void {
+  loadNhanViens(): void {
     this.loading = true;
-    this.employeeService.getEmployees().subscribe({
+    this.error = '';
+    
+    this.nhanVienService.getAllNhanVien().subscribe({
       next: (data) => {
-        this.employees = data;
+        this.nhanViens = data;
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Không thể tải danh sách nhân viên';
+        console.error('Lỗi khi tải danh sách nhân viên:', err);
+        this.error = 'Không thể tải danh sách nhân viên. Vui lòng thử lại sau.';
         this.loading = false;
-        console.error(err);
       }
     });
   }
 
-  deleteEmployee(id: string): void {
-    if (confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) {
-      this.employeeService.deleteEmployee(id).subscribe({
+  viewDetails(id: string): void {
+    this.router.navigate(['/nhan-vien', id]);
+  }
+
+  editNhanVien(id: string): void {
+    this.router.navigate(['/nhan-vien/edit', id]);
+  }
+
+  deleteNhanVien(id: string): void {
+    if (confirm('Bạn có chắc chắn muốn xóa nhân viên này không?')) {
+      this.nhanVienService.deleteNhanVien(id).subscribe({
         next: () => {
-          this.loadEmployees();
+          this.loadNhanViens();
         },
         error: (err) => {
-          this.error = 'Không thể xóa nhân viên';
-          console.error(err);
+          console.error('Lỗi khi xóa nhân viên:', err);
+          this.error = 'Không thể xóa nhân viên. Vui lòng thử lại sau.';
         }
       });
     }
+  }
+
+  createNewNhanVien(): void {
+    this.router.navigate(['/nhan-vien/create']);
   }
 }

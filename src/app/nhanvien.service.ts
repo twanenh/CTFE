@@ -24,33 +24,29 @@ export interface NhanVienDTO {
 @Injectable({
   providedIn: 'root'
 })
-export class EmployeeService {
-  private apiUrl = 'https://tuananh.up.railway.app/api/NhanVien';
+export class NhanVienService {
+  // private baseUrl = 'https://tuananh.up.railway.app/api/NhanVien';
+  private baseUrl = 'https://localhost:7085/api/NhanVien';
 
   constructor(private http: HttpClient) { }
 
-  // Lấy danh sách nhân viên
-  getEmployees(): Observable<NhanVien[]> {
-    return this.http.get<NhanVien[]>(this.apiUrl, { withCredentials: true });
+  getAllNhanVien(): Observable<NhanVien[]> {
+    return this.http.get<NhanVien[]>(this.baseUrl, { withCredentials: true });
   }
 
-  // Lấy nhân viên theo ID
-  getEmployee(id: string): Observable<NhanVien> {
-    return this.http.get<NhanVien>(`${this.apiUrl}/${id}`, { withCredentials: true });
+  getNhanVienById(id: string): Observable<NhanVien> {
+    return this.http.get<NhanVien>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
-  // Thêm nhân viên
-  createEmployee(employee: NhanVienDTO): Observable<NhanVien> {
-    return this.http.post<NhanVien>(this.apiUrl, employee, { withCredentials: true });
+  createNhanVien(nhanVien: NhanVienDTO): Observable<NhanVien> {
+    return this.http.post<NhanVien>(this.baseUrl, nhanVien, { withCredentials: true });
   }
 
-  // Cập nhật nhân viên
-  updateEmployee(id: string, employee: NhanVienDTO): Observable<NhanVien> {
-    return this.http.put<NhanVien>(`${this.apiUrl}/${id}`, employee, { withCredentials: true });
+  updateNhanVien(id: string, nhanVien: NhanVienDTO): Observable<NhanVien> {
+    return this.http.put<NhanVien>(`${this.baseUrl}/${id}`, nhanVien, { withCredentials: true });
   }
 
-  // Xóa nhân viên
-  deleteEmployee(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`, { withCredentials: true });
+  deleteNhanVien(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 }

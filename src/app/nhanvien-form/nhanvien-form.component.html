@@ -1,0 +1,137 @@
+<div class="container mt-4">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">{{ isEditMode ? 'Chỉnh sửa nhân viên' : 'Thêm nhân viên mới' }}</h3>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Đang tải...</span>
+          </div>
+        </div>
+  
+        <div *ngIf="error" class="alert alert-danger">
+          {{ error }}
+        </div>
+  
+        <div *ngIf="successMessage" class="alert alert-success">
+          {{ successMessage }}
+        </div>
+  
+        <form [formGroup]="nhanVienForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="ten" class="form-label">Tên nhân viên <span class="text-danger">*</span></label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="ten" 
+                  formControlName="ten"
+                  [ngClass]="{'is-invalid': tenControl?.invalid && tenControl?.touched}"
+                >
+                <div class="invalid-feedback" *ngIf="tenControl?.errors?.['required'] && tenControl?.touched">
+                  Vui lòng nhập tên nhân viên
+                </div>
+              </div>
+  
+              <div class="mb-3">
+                <label for="tuoi" class="form-label">Tuổi <span class="text-danger">*</span></label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="tuoi" 
+                  formControlName="tuoi"
+                  [ngClass]="{'is-invalid': tuoiControl?.invalid && tuoiControl?.touched}"
+                >
+                <div class="invalid-feedback" *ngIf="tuoiControl?.errors?.['required'] && tuoiControl?.touched">
+                  Vui lòng nhập tuổi
+                </div>
+                <div class="invalid-feedback" *ngIf="tuoiControl?.errors?.['min'] && tuoiControl?.touched">
+                  Tuổi phải từ 18 trở lên
+                </div>
+                <div class="invalid-feedback" *ngIf="tuoiControl?.errors?.['max'] && tuoiControl?.touched">
+                  Tuổi không được vượt quá 65
+                </div>
+              </div>
+  
+              <div class="mb-3">
+                <label for="role" class="form-label">Chức vụ <span class="text-danger">*</span></label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="role" 
+                  formControlName="role"
+                  [ngClass]="{'is-invalid': roleControl?.invalid && roleControl?.touched}"
+                >
+                <div class="invalid-feedback" *ngIf="roleControl?.errors?.['required'] && roleControl?.touched">
+                  Vui lòng nhập chức vụ
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email" 
+                  formControlName="email"
+                  [ngClass]="{'is-invalid': emailControl?.invalid && emailControl?.touched}"
+                >
+                <div class="invalid-feedback" *ngIf="emailControl?.errors?.['required'] && emailControl?.touched">
+                  Vui lòng nhập email
+                </div>
+                <div class="invalid-feedback" *ngIf="emailControl?.errors?.['email'] && emailControl?.touched">
+                  Vui lòng nhập đúng định dạng email
+                </div>
+              </div>
+  
+              <div class="mb-3">
+                <label for="luong" class="form-label">Lương <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <input 
+                    type="number" 
+                    class="form-control" 
+                    id="luong" 
+                    formControlName="luong"
+                    [ngClass]="{'is-invalid': luongControl?.invalid && luongControl?.touched}"
+                  >
+                  <span class="input-group-text">VNĐ</span>
+                  <div class="invalid-feedback" *ngIf="luongControl?.errors?.['required'] && luongControl?.touched">
+                    Vui lòng nhập lương
+                  </div>
+                  <div class="invalid-feedback" *ngIf="luongControl?.errors?.['min'] && luongControl?.touched">
+                    Lương không được âm
+                  </div>
+                </div>
+              </div>
+  
+              <div class="mb-3 form-check">
+                <input 
+                  type="checkbox" 
+                  class="form-check-input" 
+                  id="trangThai" 
+                  formControlName="trangThai"
+                >
+                <label class="form-check-label" for="trangThai">Hoạt động</label>
+              </div>
+            </div>
+          </div>
+  
+          <div class="d-flex justify-content-end mt-3">
+            <button type="button" class="btn btn-secondary me-2" (click)="cancel()">Hủy</button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="submitting"
+            >
+              <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              {{ isEditMode ? 'Cập nhật' : 'Thêm mới' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

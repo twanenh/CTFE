@@ -1,0 +1,62 @@
+<div class="container mt-4">
+    <div *ngIf="loading" class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Đang tải...</span>
+      </div>
+    </div>
+  
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+  
+    <div *ngIf="nhanVien && !loading && !error">
+      <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Thông tin nhân viên</h3>
+          <div>
+            <button class="btn btn-light me-2" (click)="editNhanVien(nhanVien.id)">Sửa</button>
+            <button class="btn btn-danger" (click)="deleteNhanVien(nhanVien.id)">Xóa</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="fw-bold">Tên:</label>
+                <p>{{ nhanVien.ten }}</p>
+              </div>
+              <div class="mb-3">
+                <label class="fw-bold">Tuổi:</label>
+                <p>{{ nhanVien.tuoi }}</p>
+              </div>
+              <div class="mb-3">
+                <label class="fw-bold">Chức vụ:</label>
+                <p>{{ nhanVien.role }}</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="fw-bold">Email:</label>
+                <p>{{ nhanVien.email }}</p>
+              </div>
+              <div class="mb-3">
+                <label class="fw-bold">Lương:</label>
+                <p>{{ nhanVien.luong | currency:'VND':'symbol':'1.0-0' }}</p>
+              </div>
+              <div class="mb-3">
+                <label class="fw-bold">Trạng thái:</label>
+                <p>
+                  <span [ngClass]="nhanVien.trangThai ? 'badge bg-success' : 'badge bg-danger'">
+                    {{ nhanVien.trangThai ? 'Hoạt động' : 'Không hoạt động' }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-secondary" (click)="goBack()">Quay lại</button>
+        </div>
+      </div>
+    </div>
+  </div>
