@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 })
 export class AuthService {
   private baseUrl = 'https://tuananh.up.railway.app/api/auth';
-  private localurl = 'https://localhost:7085/api/auth';
+  private asd = 'https://localhost:7085/api/auth';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
