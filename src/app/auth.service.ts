@@ -6,28 +6,20 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  // Sửa baseUrl để sử dụng HTTPS thay vì HTTP
+  // Đảm bảo URL sử dụng HTTPS thay vì HTTP
   private baseUrl = 'https://tuananh.up.railway.app/api/auth';
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasStoredAuthToken());
+  // private baseUrl = 'https://localhost:7085/api/auth';
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   constructor(private http: HttpClient) {
+    // Kiểm tra xem người dùng đã đăng nhập chưa khi khởi tạo service
     this.checkLoginStatus();
-  }
-
-  // Phương thức kiểm tra token trong localStorage
-  private hasStoredAuthToken(): boolean {
-    return !!localStorage.getItem('auth_token');
-  }
-
-  // Lưu token khi đăng nhập thành công
-  private saveAuthToken(token: string): void {
-    localStorage.setItem('auth_token', token);
-  }
-
-  // Xóa token khi đăng xuất
-  private clearAuthToken(): void {
-    localStorage.removeItem('auth_token');
+    
+    // Kiểm tra lại token khi người dùng trở lại tab sau khi đã rời đi
+    window.addEventListener('focus', () => {
+      this.checkLoginStatus();
+    });
   }
 
   register(email: string, password: string): Observable<any> {
@@ -35,14 +27,14 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
+    console.log(`Đang đăng nhập với URL: ${this.baseUrl}/login (đảm bảo đây là HTTPS)`);
     return this.http.post(`${this.baseUrl}/login`, { email, password }, { withCredentials: true })
       .pipe(
-        tap((response: any) => {
-          // Lưu token nếu có trong response
-          if (response && response.token) {
-            this.saveAuthToken(response.token);
-          }
+        tap((response) => {
+          console.log('Đăng nhập thành công:', response);
           this.isAuthenticatedSubject.next(true);
+          // Lưu trạng thái đăng nhập vào sessionStorage
+          sessionStorage.setItem('isLoggedIn', 'true');
         })
       );
   }
@@ -51,33 +43,39 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true })
       .pipe(
         tap(() => {
-          this.clearAuthToken();
           this.isAuthenticatedSubject.next(false);
+          // Xóa trạng thái đăng nhập khỏi sessionStorage
+          sessionStorage.removeItem('isLoggedIn');
         })
       );
   }
 
   checkLoginStatus(): void {
-    // Nếu đã có token trong localStorage, coi như đã đăng nhập
-    if (this.hasStoredAuthToken()) {
-      // Vẫn gọi API để xác nhận token hợp lệ
-      this.http.get<{ isAuthenticated: boolean }>(`${this.baseUrl}/check-login`, { withCredentials: true })
-        .subscribe({
-          next: (response) => {
-            this.isAuthenticatedSubject.next(response.isAuthenticated);
-            if (!response.isAuthenticated) {
-              // Nếu token không hợp lệ, xóa token
-              this.clearAuthToken();
-            }
-          },
-          error: () => {
-            // Xử lý lỗi khi gọi API
-            this.isAuthenticatedSubject.next(false);
-            this.clearAuthToken();
-          }
-        });
-    } else {
-      this.isAuthenticatedSubject.next(false);
+    // Kiểm tra trạng thái trong sessionStorage trước
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+    
+    if (isLoggedIn) {
+      // Nếu đã có trạng thái trong sessionStorage, cập nhật BehaviorSubject
+      this.isAuthenticatedSubject.next(true);
     }
+    
+    // Vẫn gọi API để xác nhận với server
+    this.http.get<{ isAuthenticated: boolean }>(`${this.baseUrl}/check-login`, { withCredentials: true })
+      .subscribe({
+        next: (response) => {
+          console.log('Trạng thái đăng nhập từ server:', response);
+          this.isAuthenticatedSubject.next(response.isAuthenticated);
+          
+          if (response.isAuthenticated) {
+            sessionStorage.setItem('isLoggedIn', 'true');
+          } else {
+            sessionStorage.removeItem('isLoggedIn');
+          }
+        },
+        error: (error) => {
+          console.error('Lỗi khi kiểm tra trạng thái đăng nhập:', error);
+          // Nếu có lỗi khi gọi API, vẫn giữ trạng thái hiện tại
+        }
+      });
   }
 }

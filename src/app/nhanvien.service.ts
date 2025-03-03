@@ -25,12 +25,14 @@ export interface NhanVienDTO {
   providedIn: 'root'
 })
 export class NhanVienService {
-  // Đảm bảo URL sử dụng HTTPS
+  // Đảm bảo URL sử dụng HTTPS thay vì HTTP
   private baseUrl = 'https://tuananh.up.railway.app/api/NhanVien';
+  // private baseUrl = 'https://localhost:7085/api/NhanVien';
 
   constructor(private http: HttpClient) { }
 
   getAllNhanVien(): Observable<NhanVien[]> {
+    console.log(`Gọi API lấy danh sách nhân viên: ${this.baseUrl} (đảm bảo đây là HTTPS)`);
     return this.http.get<NhanVien[]>(this.baseUrl, { withCredentials: true });
   }
 
