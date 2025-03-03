@@ -6,13 +6,28 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
+  // Sửa baseUrl để sử dụng HTTPS thay vì HTTP
   private baseUrl = 'https://tuananh.up.railway.app/api/auth';
-  // private baseUrl = 'https://localhost:7085/api/auth';
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasStoredAuthToken());
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   constructor(private http: HttpClient) {
     this.checkLoginStatus();
+  }
+
+  // Phương thức kiểm tra token trong localStorage
+  private hasStoredAuthToken(): boolean {
+    return !!localStorage.getItem('auth_token');
+  }
+
+  // Lưu token khi đăng nhập thành công
+  private saveAuthToken(token: string): void {
+    localStorage.setItem('auth_token', token);
+  }
+
+  // Xóa token khi đăng xuất
+  private clearAuthToken(): void {
+    localStorage.removeItem('auth_token');
   }
 
   register(email: string, password: string): Observable<any> {
@@ -20,11 +35,13 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-    console.log(email, password),
-    console.log(`${this.baseUrl}/login`)
     return this.http.post(`${this.baseUrl}/login`, { email, password }, { withCredentials: true })
       .pipe(
-        tap(() => {
+        tap((response: any) => {
+          // Lưu token nếu có trong response
+          if (response && response.token) {
+            this.saveAuthToken(response.token);
+          }
           this.isAuthenticatedSubject.next(true);
         })
       );
@@ -34,15 +51,33 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true })
       .pipe(
         tap(() => {
+          this.clearAuthToken();
           this.isAuthenticatedSubject.next(false);
         })
       );
   }
 
   checkLoginStatus(): void {
-    this.http.get<{ isAuthenticated: boolean }>(`${this.baseUrl}/check-login`, { withCredentials: true })
-      .subscribe(response => {
-        this.isAuthenticatedSubject.next(response.isAuthenticated);
-      });
+    // Nếu đã có token trong localStorage, coi như đã đăng nhập
+    if (this.hasStoredAuthToken()) {
+      // Vẫn gọi API để xác nhận token hợp lệ
+      this.http.get<{ isAuthenticated: boolean }>(`${this.baseUrl}/check-login`, { withCredentials: true })
+        .subscribe({
+          next: (response) => {
+            this.isAuthenticatedSubject.next(response.isAuthenticated);
+            if (!response.isAuthenticated) {
+              // Nếu token không hợp lệ, xóa token
+              this.clearAuthToken();
+            }
+          },
+          error: () => {
+            // Xử lý lỗi khi gọi API
+            this.isAuthenticatedSubject.next(false);
+            this.clearAuthToken();
+          }
+        });
+    } else {
+      this.isAuthenticatedSubject.next(false);
+    }
   }
 }

@@ -25,8 +25,8 @@ export interface NhanVienDTO {
   providedIn: 'root'
 })
 export class NhanVienService {
+  // Đảm bảo URL sử dụng HTTPS
   private baseUrl = 'https://tuananh.up.railway.app/api/NhanVien';
-  // private baseUrl = 'https://localhost:7085/api/NhanVien';
 
   constructor(private http: HttpClient) { }
 

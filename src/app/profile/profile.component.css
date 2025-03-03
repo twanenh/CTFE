@@ -1,0 +1,49 @@
+.profile-container {
+    max-width: 600px; /* Giới hạn chiều rộng */
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  h1 {
+    font-size: 2.5rem; /* Tăng kích thước tiêu đề */
+    margin-bottom: 2rem;
+    color: #333;
+  }
+  
+  .profile-card {
+    background-color: #f9f9f9;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column; /* Chuyển thành hiển thị dọc */
+    align-items: center; /* Canh giữa nội dung */
+  }
+  
+  .profile-image {
+    width: 200px; /* Tăng kích thước ảnh */
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #ddd; /* Viền xung quanh ảnh */
+    margin-bottom: 20px; /* Tạo khoảng cách với thông tin bên dưới */
+  }
+  
+  .profile-info {
+    text-align: center; /* Căn giữa nội dung */
+    font-size: 1.5rem; /* Tăng cỡ chữ */
+  }
+  
+  .profile-info h2 {
+    margin-bottom: 15px;
+    font-size: 2rem; /* Tăng cỡ chữ tên */
+    color: #222;
+  }
+  
+  .profile-info p {
+    margin: 10px 0;
+    color: #555;
+    font-size: 1.3rem; /* Tăng cỡ chữ thông tin */
+  }
+  
