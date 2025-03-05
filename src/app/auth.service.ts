@@ -52,30 +52,49 @@ export class AuthService {
   }
 
   checkLoginStatus(): void {
-    // Kiểm tra trạng thái trong sessionStorage trước
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     
+    // Nếu đã đăng nhập theo sessionStorage, giữ nguyên trạng thái
     if (isLoggedIn) {
-      // Nếu đã có trạng thái trong sessionStorage, cập nhật BehaviorSubject
       this.isAuthenticatedSubject.next(true);
+      
+      // Chỉ kiểm tra với server sau một khoảng thời gian nhất định
+      if (this.shouldCheckServerStatus()) {
+        this.verifyServerLoginStatus();
+      }
+    } else {
+      // Nếu chưa đăng nhập mới gọi API
+      this.verifyServerLoginStatus();
     }
+  }
+  
+  private shouldCheckServerStatus(): boolean {
+    const lastCheck = sessionStorage.getItem('lastLoginCheck');
+    if (!lastCheck) return true;
     
-    // Vẫn gọi API để xác nhận với server
+    // Chỉ kiểm tra lại sau 30 phút
+    const THIRTY_MINUTES = 30 * 60 * 1000;
+    return Date.now() - parseInt(lastCheck) > THIRTY_MINUTES;
+  }
+  
+  private verifyServerLoginStatus(): void {
     this.http.get<{ isAuthenticated: boolean }>(`${this.baseUrl}/check-login`, { withCredentials: true })
       .subscribe({
         next: (response) => {
-          console.log('Trạng thái đăng nhập từ server:', response);
-          this.isAuthenticatedSubject.next(response.isAuthenticated);
+          sessionStorage.setItem('lastLoginCheck', Date.now().toString());
           
           if (response.isAuthenticated) {
+            this.isAuthenticatedSubject.next(true);
             sessionStorage.setItem('isLoggedIn', 'true');
           } else {
+            this.isAuthenticatedSubject.next(false);
             sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('auth_token');
           }
         },
         error: (error) => {
           console.error('Lỗi khi kiểm tra trạng thái đăng nhập:', error);
-          // Nếu có lỗi khi gọi API, vẫn giữ trạng thái hiện tại
+          // Không tự động đăng xuất nếu kiểm tra thất bại
         }
       });
   }
