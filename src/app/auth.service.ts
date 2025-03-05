@@ -52,50 +52,43 @@ export class AuthService {
   }
 
   checkLoginStatus(): void {
-    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+    const token = sessionStorage.getItem('auth_token');
     
-    // Nếu đã đăng nhập theo sessionStorage, giữ nguyên trạng thái
-    if (isLoggedIn) {
-      this.isAuthenticatedSubject.next(true);
-      
-      // Chỉ kiểm tra với server sau một khoảng thời gian nhất định
-      if (this.shouldCheckServerStatus()) {
-        this.verifyServerLoginStatus();
-      }
-    } else {
-      // Nếu chưa đăng nhập mới gọi API
+    if (token) {
       this.verifyServerLoginStatus();
+    } else {
+      this.isAuthenticatedSubject.next(false);
     }
   }
-  
   private shouldCheckServerStatus(): boolean {
     const lastCheck = sessionStorage.getItem('lastLoginCheck');
     if (!lastCheck) return true;
-    
+
     // Chỉ kiểm tra lại sau 30 phút
     const THIRTY_MINUTES = 30 * 60 * 1000;
     return Date.now() - parseInt(lastCheck) > THIRTY_MINUTES;
   }
-  
+
   private verifyServerLoginStatus(): void {
-    this.http.get<{ isAuthenticated: boolean }>(`${this.baseUrl}/check-login`, { withCredentials: true })
-      .subscribe({
-        next: (response) => {
-          sessionStorage.setItem('lastLoginCheck', Date.now().toString());
-          
-          if (response.isAuthenticated) {
-            this.isAuthenticatedSubject.next(true);
-            sessionStorage.setItem('isLoggedIn', 'true');
-          } else {
-            this.isAuthenticatedSubject.next(false);
-            sessionStorage.removeItem('isLoggedIn');
-            sessionStorage.removeItem('auth_token');
-          }
-        },
-        error: (error) => {
-          console.error('Lỗi khi kiểm tra trạng thái đăng nhập:', error);
-          // Không tự động đăng xuất nếu kiểm tra thất bại
+    this.http.get<{ isAuthenticated: boolean }>(
+      `${this.baseUrl}/check-login`, 
+      { 
+        withCredentials: true,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-      });
+      }
+    ).subscribe({
+      next: (response) => {
+        if (response.isAuthenticated) {
+          this.isAuthenticatedSubject.next(true);
+        } else {
+          this.logout();
+        }
+      },
+      error: () => {
+        this.logout();
+      }
+    });
   }
 }

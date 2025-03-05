@@ -11,10 +11,11 @@ import { NhanVienFormComponent } from '../app/nhanvien-form/nhanvien-form.compon
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
+  
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'login', component: LoginComponent },
   { path: 'nhan-vien', component: NhanVienListComponent, canActivate: [AuthGuard] },
   { path: 'nhan-vien/:id', component: NhanVienDetailComponent, canActivate: [AuthGuard] },
   { path: 'nhan-vien/create', component: NhanVienFormComponent, canActivate: [AuthGuard] },

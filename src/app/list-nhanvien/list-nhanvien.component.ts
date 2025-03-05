@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NhanVien, NhanVienService } from '../nhanvien.service';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-nhan-vien-list',
@@ -18,26 +19,41 @@ export class NhanVienListComponent implements OnInit {
 
   constructor(
     private nhanVienService: NhanVienService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) { }
 
+
   ngOnInit(): void {
-    this.loadNhanViens();
+    // Kiểm tra xác thực trước khi load
+    this.authService.isAuthenticated$.subscribe(isAuth => {
+      if (isAuth) {
+        this.loadNhanViens();
+      } else {
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   loadNhanViens(): void {
     this.loading = true;
     this.error = '';
     
+    // Thêm error handling chi tiết
     this.nhanVienService.getAllNhanVien().subscribe({
       next: (data) => {
         this.nhanViens = data;
         this.loading = false;
       },
       error: (err) => {
-        console.error('Lỗi khi tải danh sách nhân viên:', err);
-        this.error = 'Không thể tải danh sách nhân viên. Vui lòng thử lại sau.';
+        console.error('Chi tiết lỗi:', err);
+        this.error = err.message || 'Không thể tải danh sách nhân viên';
         this.loading = false;
+        
+        // Nếu lỗi xác thực, chuyển hướng về login
+        if (err.status === 401 || err.status === 403) {
+          this.router.navigate(['/login']);
+        }
       }
     });
   }
