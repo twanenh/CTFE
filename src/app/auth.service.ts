@@ -15,7 +15,7 @@ export class AuthService {
   constructor(private http: HttpClient) {
     // Kiểm tra xem người dùng đã đăng nhập chưa khi khởi tạo service
     this.checkLoginStatus();
-    
+    ///
     // Kiểm tra lại token khi người dùng trở lại tab sau khi đã rời đi
     window.addEventListener('focus', () => {
       this.checkLoginStatus();
