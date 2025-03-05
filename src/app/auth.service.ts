@@ -27,13 +27,14 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-    console.log(`Đang đăng nhập với URL: ${this.baseUrl}/login (đảm bảo đây là HTTPS)`);
     return this.http.post(`${this.baseUrl}/login`, { email, password }, { withCredentials: true })
       .pipe(
-        tap((response) => {
-          console.log('Đăng nhập thành công:', response);
+        tap((response: any) => {
+          // Giả sử server trả về token
+          if (response.token) {
+            sessionStorage.setItem('auth_token', response.token);
+          }
           this.isAuthenticatedSubject.next(true);
-          // Lưu trạng thái đăng nhập vào sessionStorage
           sessionStorage.setItem('isLoggedIn', 'true');
         })
       );
@@ -43,8 +44,8 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true })
       .pipe(
         tap(() => {
+          sessionStorage.removeItem('auth_token');
           this.isAuthenticatedSubject.next(false);
-          // Xóa trạng thái đăng nhập khỏi sessionStorage
           sessionStorage.removeItem('isLoggedIn');
         })
       );
