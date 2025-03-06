@@ -53,9 +53,16 @@ export class AuthService {
 
   checkLoginStatus(): void {
     const token = sessionStorage.getItem('auth_token');
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
     
-    if (token) {
-      this.verifyServerLoginStatus();
+    if (token && isLoggedIn === 'true') {
+      // Chỉ kiểm tra với server nếu cần thiết
+      if (this.shouldCheckServerStatus()) {
+        this.verifyServerLoginStatus();
+      } else {
+        // Tin tưởng trạng thái đăng nhập hiện tại
+        this.isAuthenticatedSubject.next(true);
+      }
     } else {
       this.isAuthenticatedSubject.next(false);
     }
@@ -63,13 +70,15 @@ export class AuthService {
   private shouldCheckServerStatus(): boolean {
     const lastCheck = sessionStorage.getItem('lastLoginCheck');
     if (!lastCheck) return true;
-
-    // Chỉ kiểm tra lại sau 30 phút
-    const THIRTY_MINUTES = 30 * 60 * 1000;
-    return Date.now() - parseInt(lastCheck) > THIRTY_MINUTES;
+  
+    // Chỉ kiểm tra lại sau 5 phút
+    const FIVE_MINUTES = 5 * 60 * 1000;
+    return Date.now() - parseInt(lastCheck) > FIVE_MINUTES;
   }
 
   private verifyServerLoginStatus(): void {
+    sessionStorage.setItem('lastLoginCheck', Date.now().toString());
+    
     this.http.get<{ isAuthenticated: boolean }>(
       `${this.baseUrl}/check-login`, 
       { 
@@ -83,11 +92,16 @@ export class AuthService {
         if (response.isAuthenticated) {
           this.isAuthenticatedSubject.next(true);
         } else {
-          this.logout();
+          // Nếu server cho biết không được xác thực, thì đăng xuất
+          sessionStorage.removeItem('auth_token');
+          sessionStorage.removeItem('isLoggedIn');
+          this.isAuthenticatedSubject.next(false);
         }
       },
-      error: () => {
-        this.logout();
+      error: (err) => {
+        console.error('Lỗi kiểm tra trạng thái đăng nhập:', err);
+        // Không tự động đăng xuất khi có lỗi mạng
+        // Giữ nguyên trạng thái đăng nhập hiện tại
       }
     });
   }
