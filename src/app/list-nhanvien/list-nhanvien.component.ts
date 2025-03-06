@@ -9,8 +9,8 @@ import { AuthService } from '../auth.service';
   selector: 'app-nhan-vien-list',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './nhan-vien-list.component.html',
-  styleUrls: ['./nhan-vien-list.component.css']
+  templateUrl: './list-nhanvien.component.html',
+  styleUrls: ['./list-nhanvien.component.css']
 })
 export class NhanVienListComponent implements OnInit {
   nhanViens: NhanVien[] = [];
